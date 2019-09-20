@@ -2,41 +2,38 @@
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <!-- event keyboard v-on:keyup.enter & modifier-->
 
-<!-- <link href="https://unpkg.com/todomvc-app-css@2.1.0/index.css" rel="stylesheet" /> -->
-<div class="container">
-<section class="todoapp card form-group">
-    
-        
-    
-    <header class="header text-center card-body">
-        <h1>MyTodos</h1>
-        <input class="new-todo form-control" autocomplete="off" placeholder="Add New Todo" v-model="newtodo"
+<link href="https://unpkg.com/todomvc-app-css@2.1.0/index.css" rel="stylesheet" />
+
+<section class="todoapp">
+    <header class="header">
+        <h1>BenimTodo</h1>
+        <input class="new-todo" autocomplete="off" placeholder="Add New Todo" v-model="newtodo"
             @keyup.enter="addtodo()">
     </header>
-    <section class="main form-group">
+    <section class="main">
             <input  class="toggle-all" id="toggle-all" type="checkbox" v-model="alldone">
             <label for="toggle-all">Mark all as complete</label>
-        <ul class="todo-list list-group">
-            <li class="todo list-group-item" v-for="todo in filteredTodos" :class="{completed:todo.completed, editing:todo==editingtodo}">
+        <ul class="todo-list">
+            <li class="todo" v-for="todo in filteredTodos" :class="{completed:todo.completed, editing:todo==editingtodo}">
                 <div class="view">
-                    <input class="toggle form-control" type="checkbox" v-model="todo.completed">
+                    <input class="toggle" type="checkbox" v-model="todo.completed">
                     <label @dblclick="editTodo(todo)">{{todo.title}}</label>
-                    <button class="destroy  btn-danger" @click="delettodo(todo)">x</button>
+                    <button class="destroy" @click="delettodo(todo)"></button>
                 </div>
-                <input  v-model="todo.title" @keyup.enter="doneEditing" @keyup.esc="cancelEditing" class="edit" type="text">
+                <input v-model="todo.title" @keyup.enter="doneEditing" @keyup.esc="cancelEditing" class="edit" type="text">
             </li>
         </ul>
     </section>
-    <footer class="footer form-group card text-center">
+    <footer class="footer">
         <span class="todo-count">
             <strong>{{rammingtodos}}</strong> {{rammingtest}} left
         </span>
-        <ul class="filters list-group list-group-horizontal-sm text-center">
-            <li class="list-group-item"><a href="#" @click.prevent="visibility='all'" :class="{selected:visibility=='all'}">All</a></li>
-            <li class="list-group-item"><a href="#" @click.prevent="visibility='active'" :class="{selected:visibility=='active'}">Active</a></li>
-            <li class="list-group-item"><a href="#" @click.prevent="visibility='completed'" :class="{selected:visibility=='completed'}">Completed</a></li>
+        <ul class="filters">
+            <li><a href="#" @click.prevent="visibility='all'" :class="{selected:visibility=='all'}">All</a></li>
+            <li><a href="#" @click.prevent="visibility='active'" :class="{selected:visibility=='active'}">Active</a></li>
+            <li><a href="#" @click.prevent="visibility='completed'" :class="{selected:visibility=='completed'}">Completed</a></li>
         </ul>
-        <button @click="removeCompleted" class="clear-completed btn btn-primary">
+        <button @click="removeCompleted" class="clear-completed">
             Clear completed
         </button>
     </footer>
@@ -45,159 +42,169 @@
     <p>Double-click to edit a todo</p>
 </footer>
 
-</div>
-
-
-
-
-
-
-
-
 <script>
 
-    /*global Vue, todoStorage */
-
-// Vue.config.devtools = true 
-
-   (function (exports) {
-
-	'use strict';
-
-	var filters = {
-		all: function (todos) {
-			return todos;
-		},
-		active: function (todos) {
-			return todos.filter(function (todo) {
-				return !todo.completed;
-			});
-		},
-		completed: function (todos) {
-			return todos.filter(function (todo) {
-				return todo.completed;
-			});
-		}
-	};
-
-    var todos_storge = {
-        feth:function(){
-            var todos = JSON.parse(localStorage.getItem('todos') || '[]');
-            return todos;
-        },
-        save: function(todos){
-            localStorage.setItem('todos' , JSON.stringify(todos));
-        }
-    }
-
-
-	exports.app = new Vue({
-            'el': '.todoapp',
-            'data': {
-                oldEditingTodoTitle: null,
-                editingtodo: null , 
-                newtodo: '' ,
-                visibility: 'all',
-                todos: todos_storge.feth()
-                
-
+        /*global Vue, todoStorage */
+    
+    // Vue.config.devtools = true 
+    
+       (function (exports) {
+    
+        'use strict';
+    
+        var filters = {
+            all: function (todos) {
+                return todos;
             },
-            computed: {
-			filteredTodos: function () {
-				return filters[this.visibility](this.todos);
-			}, 
-            rammingtodos: function(){
-                return  filters.active(this.todos).length;
-                    },
-                    rammingtest : function(){
-                            if( filters.active(this.todos).length > 1 )
-                                return 'items';
-                             return 'item';   
-
-                    },
-                    alldone :{
-                       get: function(){
-                       return this.rammingtodos === 0;  
-
-                    },
-                       set: function(value){
-                           this.todos.forEach(function(todo){
-                               todo.completed = value; 
-                           });
-                       }
-
-                    } 
-                   
-			
-		},
-
-                methods: {
-                    delettodo: function (todo) {
-                        this.todos.splice(this.todos.indexOf(todo), 1)
-                    },
-                    addtodo: function () {
-
-                        if (this.newtodo == "")
-                            return;
-
-                        this.todos.push({
-
-                            'title': this.newtodo,
-                            'completed': false
-
-                        });
-                        this.newtodo = ""
-
-                    },removeCompleted(){
-                        this.todos = filters.active(this.todos);
-                    },
-                    editTodo(todo){
-                        this.editingtodo = todo;
-                        this.oldEditingTodoTitle = todo.title;
-                    },
-                    doneEditing(){
-                        if(this.editingtodo.title == '')
-                            this.delettodo(this.editingtodo);
-                        this.editingtodo = null;
-                    },
-                    cancelEditing(){
-                        this.editingtodo.title = this.oldEditingTodoTitle;
-                        this.editingtodo = null;
-
-                    },
-
-                   
-
-                }, watch:{
-                    todos : {
-                        handler: function(todos){
-                            todos_storge.save(todos)
-
+            active: function (todos) {
+                return todos.filter(function (todo) {
+                    return !todo.completed;
+                });
+            },
+            completed: function (todos) {
+                return todos.filter(function (todo) {
+                    return todo.completed;
+                });
+            }
+        };
+    
+        var todos_storge = {
+            feth:function(){
+                var todos = JSON.parse(localStorage.getItem('todos') || '[]');
+                return todos;
+            },
+            save: function(todos){
+                localStorage.setItem('todos' , JSON.stringify(todos));
+            }
+        }
+    
+    
+        exports.app = new Vue({
+                'el': '.todoapp',
+                'data': {
+                    oldEditingTodoTitle: null,
+                    editingtodo: null , 
+                    newtodo: '' ,
+                    visibility: 'all',
+                    todos: todos_storge.feth()
+                    
+    
+                },
+                computed: {
+                filteredTodos: function () {
+                    return filters[this.visibility](this.todos);
+                }, 
+                rammingtodos: function(){
+                    return  filters.active(this.todos).length;
                         },
-                        deep : true
-                    }
-                }
+                        rammingtest : function(){
+                                if( filters.active(this.todos).length > 1 )
+                                    return 'items';
+                                 return 'item';   
+    
+                        },
+                        alldone :{
+                           get: function(){
+                           return this.rammingtodos === 0;  
+    
+                        },
+                           set: function(value){
+                               this.todos.forEach(function(todo){
+                                   todo.completed = value; 
+                               });
+                           }
+    
+                        } 
+                       
                 
-
-            })
-        })(window);
-</script>
-<style>
-
-</style>
-
+            },
+    
+                    methods: {
+                        delettodo: function (todo) {
+                            this.todos.splice(this.todos.indexOf(todo), 1)
+                        },
+                        addtodo: function () {
+    
+                            if (this.newtodo == "")
+                                return;
+    
+                            this.todos.push({
+    
+                                'title': this.newtodo,
+                                'completed': false
+    
+                            });
+                            this.newtodo = ""
+    
+                        },removeCompleted(){
+                            this.todos = filters.active(this.todos);
+                        },
+                        editTodo(todo){
+                            this.editingtodo = todo;
+                            this.oldEditingTodoTitle = todo.title;
+                        },
+                        doneEditing(){
+                            if(this.editingtodo.title == '')
+                                this.delettodo(this.editingtodo);
+                            this.editingtodo = null;
+                        },
+                        cancelEditing(){
+                            this.editingtodo.title = this.oldEditingTodoTitle;
+                            this.editingtodo = null;
+    
+                        },
+    
+                       
+    
+                    }, watch:{
+                        todos : {
+                            handler: function(todos){
+                                todos_storge.save(todos)
+    
+                            },
+                            deep : true
+                        }
+                    }
+                    
+    
+                })
+            })(window);
+    </script>
+    <style>
+    .todoapp h1 {
+        position: absolute;
+        top: -155px;
+        width: 100%;
+        font-size: 100px;
+        font-weight: 100;
+        text-align: center;
+        color:rgba(-303, 10, 369, 0.15);
+        -webkit-text-rendering: optimizeLegibility;
+        -moz-text-rendering: optimizeLegibility;
+        text-rendering: optimizeLegibility;
+    }
+    </style>
 <!-- Bootstrap CSS -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
 
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" -->
+<!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script> 
- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
+    crossorigin="anonymous"></script> -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
     integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
     crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-    crossorigin="anonymous"></script> 
+    crossorigin="anonymous"></script> -->
+
+
+
+
+
+
+
+
+
