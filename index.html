@@ -1,415 +1,91 @@
-<!-- production version, optimized for size and speed -->
-<script src="https://cdn.jsdelivr.net/npm/vue"></script>
-<head><title>Ayman for all movies</title></head>
-<div id="app">
-
-    <!--  -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-dark" >
-        <a class="navbar-brand" style="color: #FFF;" href="#"><span style="color: #0089c1;">Ayman</span><span style="color: #fff;">For All
-                movies</span></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-           
-            </ul>
-            <form class="form-inline my-2 my-lg-0">
-                <input v-model="search" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            </form>
-        </div>
-    </nav>
-    <!--  -->
-    <div class="container">
-
-        <div class="dropdown open">
-            <button class="btn btn-outline-success dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                Chose color
-            </button>
-            <div class="dropdown-menu" aria-labelledby="triggerId">
-                <button v-on:click="addclassred()" style="color:red" class="dropdown-item btn btn-danger">red</button>
-                <button v-on:click="addclassblue()" style="color:blue"
-                    class="dropdown-item btn btn-danger">blue</button>
-                <button v-on:click="addclassgreen()" style="color:#2ecc71"
-                    class="dropdown-item btn btn-danger">green</button>
-                <button v-on:click="addclassyallow()" style="color:#f1c40f"
-                    class="dropdown-item btn btn-danger">yallow</button>
-                <button v-on:click="slash1abc9c()" style="color:#1abc9c"
-                    class="dropdown-item btn btn-danger">#1abc9c</button>
-            </div>
-        </div>
-
-        <button @click="activaddpost =! activaddpost" type="button" name="" id=""
-            class="btn btn-outline-primary buttonactivaddpost ">Add New Post</button>
-
-
-        <div v-if="activaddpost" class="card ">
-            <div class="card-body">
-
-                <div class="form-group">
-                    <label class="d-block p-2 bg-primary text-white " for="formGroupExampleInput">Add new title</label>
-                    <input v-model="new_list.title" type="text" class="form-control" id="formGroupExampleInput"
-                        placeholder="Add new name">
-                    <small id="emailHelp" class="form-text text-muted">{{new_list.title}}</small>
-
-                </div>
-
-                <div class="form-group">
-                    <label class="d-block p-2 bg-primary text-white " for="formGroupExampleInput">Add new image</label>
-                    <input v-model="new_list.img" type="text" class="form-control" id="formGroupExampleInput"
-                        placeholder="Add new image">
-                    <small id="emailHelp" class="form-text text-muted">{{new_list.img}}</small>
-
-                </div>
-
-
-                <div class="form-group">
-                    <label  class="d-block p-2 bg-primary text-white " for="exampleFormControlTextarea1">Add new content</label>
-                    <textarea v-model="new_list.des" class="form-control" id="exampleFormControlTextarea1"
-                        rows="3"></textarea>
-                </div>
-
-                <button @click="additemnow" type="button" class="btn btn-primary">Add</button>
-            </div>
-        </div>
-
-        <button @click="revercepost" type="button" name="" id=""
-          class="btn btn-primary buttonshowpost ">reverse posts</button>
-
-        <button @click="activposts =! activposts" type="button" name="" id=""
-         :class="className" class="btn btn-info buttonshowpost ">{{button}}</button>
-
-        <ul v-if="activposts" class="nav flex-column">
-            <div class="row">
-                <div v-for="(item , index) in filterblog" :key="item.title" class="col-lg-12 col-md-12 ">
-                    <li class="nav-item">
-                        <div class="card ">
-                            <div class="card-body" >
-
-
-
-
-
-
-
-                               <div class="lead " :class="[classColor]">
-                                    <span class=" btn btn-danger">The post number : {{index+1}}</span>
-                                    <p class="d-block p-2 bg-dark text-white ">The title post</p>
-                                    <div class=" user itemdes">
-                                        <button @click="active =! active" class=" bg-primary text-white ">{{item.title}}</button>
-                                    </div>
-                                    <div v-if="active" class="lead ">
-                                        <p class="d-block p-2 bg-dark text-white ">The image post</p>
-                                        <div class="itemdes">
-                                            <img :src="item.img" class="card-img-top" alt="...">
-                                        </div>
-
-                                    </div>
-                                    <div v-if="active" class="lead " :style="[{ 'font-size': sizei + 'px'}]">
-                                        <p class="d-block p-2 bg-dark text-white ">The content post</p>
-                                        <div class="itemdes">
-                                            {{item.des}}
-                                        </div>
-
-
-                                    </div>
-                                    <button v-if="active" @click="deletitemnow(item)" type="button"
-                                        class="btn btn-danger">Delete</button>
-                                    <!--  -->
-                                    <!-- Button trigger modal -->
-                                    <button v-if="active" type="button" class="btn btn-primary" data-toggle="modal"
-                                        data-target="#exampleModalLong">
-                                        Edit
-                                    </button>
-
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog"
-                                        aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLongTitle">Edit The Post
-                                                    </h5>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="form-group">
-                                                        <label class="d-block p-2 bg-danger text-white "
-                                                            for="formGroupExampleInput">Edit title post</label>
-                                                        <input v-model="item.title" type="text" class="form-control"
-                                                            id="formGroupExampleInput" placeholder="Example input">
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label class="d-block p-2 bg-danger text-white "
-                                                            for="formGroupExampleInput">Edit image post</label>
-                                                        <input v-model="item.img" type="text" class="form-control"
-                                                            id="formGroupExampleInput" placeholder="Example input">
-                                                    </div>
-                                                    <img :src="item.img" class="card-img-top" alt="...">
-
-
-
-                                                    <div class="form-group">
-                                                        <label class="d-block p-2 bg-danger text-white "
-                                                            for="exampleFormControlTextarea1">Edit content post</label>
-                                                        <textarea v-model="item.des" class="form-control"
-                                                            id="exampleFormControlTextarea1" rows="3"></textarea>
-                                                    </div>
-
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-success"
-                                                        data-dismiss="modal">Save</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--  -->
-                                    <div v-if="active" class="dropdown open">
-                                        <button class="btn btn-outline-success dropdown-toggle" type="button"
-                                            id="triggerId" data-toggle="dropdown" aria-haspopup="true"
-                                            aria-expanded="false">
-                                            Chose color
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="triggerId">
-                                            <button v-on:click="addclassred()" style="color:red"
-                                                class="dropdown-item btn btn-danger">red</button>
-                                            <button v-on:click="addclassblue()" style="color:blue"
-                                                class="dropdown-item btn btn-danger">blue</button>
-                                            <button v-on:click="addclassgreen()" style="color:#2ecc71"
-                                                class="dropdown-item btn btn-danger">green</button>
-                                            <button v-on:click="addclassyallow()" style="color:#f1c40f"
-                                                class="dropdown-item btn btn-danger">yallow</button>
-                                            <button v-on:click="slash1abc9c()" style="color:#1abc9c"
-                                                class="dropdown-item btn btn-danger">#1abc9c</button>
-
-                                        </div>
-                                    </div>
-
-                                    <button v-if="active" @click="sizei++" type="button" class="btn btn-primary">+</button>
-                                    <button v-if="active" @click="sizei--" type="button" class="btn btn-danger ">-</button>
-
-                                </div>
-                            </div>
-
-                    </li>
-                </div>
-
-            </div>
-
-        </ul>
-    </div>
-
-</div>
-<script>
-    Vue.config.devtools = true
-
-
-    var app = new Vue({
-        'el': '#app',
-        'data': {
-
-            new_list: {
-                'title': '',
-                'des': '',
-                'img': ''
-            },
-            list: [{
-                'title': 'John Wick: Chapter 3 - Parabellum (2019) ',
-                'des': 'The third entry of the franchise sees John Wick (Keanu Reeves) on the run with a $14 million bounty placed on him after he kills a member of an underground assassins guild. With every hitman in the world hot on his trail, he enlists the help of a trusted former colleague (Halle Berry) to fight his way out of New York City. Directed by Chad Stahelski and also stars Ian McShane, Laurence Fishburne and Anjelica Huston.',
-                'img': 'https://i.ytimg.com/vi/M7XM597XO94/maxresdefault.jpg'
-            },
-            {
-                'title': 'Booksmart (2019)',
-                'des': 'Director Olivia Wilde’s debut film is a female-centric, coming-of-age comedy. On the eve of their high school graduation, two overachieving students decide to go all out for fun and debauchery in a single night. Hilarity ensues as they seek to make up for lost time.',
-                'img': 'https://s1.dmcdn.net/v/Pn-QS1ShG6BQ8XH-9/x1080'
-
-            },
-
-            ],
-            editname: '',
-            editage: '',
-            addname: '',
-            activaddpost: 0,
-            activposts: 1,
-            active:true,
-            classColor: '',
-            sizei: 30,
-            search: '',
-            button : 'Hide the post'
-
-
-
-        },
-        'methods': {
-            additemnow: function () {
-
-                if (this.new_list != '')
-                    this.list.push({
-                        title: this.new_list.title,
-                        des: this.new_list.des,
-                        img: this.new_list.img,
-
-                    });
-                this.new_list.title = '';
-                this.new_list.des = '';
-                this.new_list.img = '';
-
-
-            },
-            deletitemnow: function (item) {
-                let index = this.list.indexOf(item)
-                this.list.splice(index, 1)
-
-            },
-            addclassred: function () {
-                this.classColor = 'red'
-            },
-            addclassblue: function () {
-                this.classColor = 'blue'
-            },
-            addclassgreen: function () {
-                this.classColor = 'green'
-            },
-            addclassyallow: function () {
-                this.classColor = 'yallow'
-            },
-            slash1abc9c: function() {
-                this.classColor = 'slash1abc9c'
-            },
-            revercepost: function() {
-                this.list.reverse();
-            },
-        },
-        'computed': {
-            filterblog: function(){
-                return this.list.filter((list) => {
-                    return list.title.match(this.search);
-
-                });
-            },className: function (){
-                return {'btn btn-danger ':this.activposts, 'btn btn-primary ':!this.activposts  }
-            },
-        },'watch': {
-            activposts: function (value) {
-                if (value) {
-                    this.button = 'Hide the post'
-                } else {
-                    this.button = 'Show the post'
-                }
-            },
-           
-
-        },
-
-
-    });
-
-</script>
-<style>
-    .dropdown-menu.show {
-        top: 30px;
-    }
-
-    .red {
-        color: red
-    }
-
-    .blue {
-        color: blue
-    }
-
-    .green {
-        color: #2ecc71
-    }
-
-    .yallow {
-        color: #f1c40f
-    }
-
-    .slash1abc9c {
-        color: #1abc9c
-    }
-
-    .card {
-        margin: 10px;
-    }
-
-    .card-body {
-        border: 2px solid #000
-    }
-   
-
-    /*//////////////////////*/
-
-    .classh1 {
-        font-size: 54px
-    }
-
-    .classh2 {
-        font-size: 44px
-    }
-
-    .classh3 {
-        font-size: 34px
-    }
-
-    .classh4 {
-        font-size: 24px
-    }
-
-    .classh5 {
-        font-size: 14px
-    }
-
-
-
-    /*//////////////////////*/
-    .fontsizebig {
-        font-size: 38px
-    }
-
-    .fontsizesmall {
-        font-size: 15px
-    }
-
-    .dropdown.open {
-        display: inline-block;
-    }
-
-    .buttonactivaddpost,
-    .itemdes {
-        margin: 20px;
-
-    }
-
-    .buttonshowpost {
-        margin-left: 2px;
-    }
-</style>
-
-
-
-<!-- Bootstrap CSS -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-    crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-    crossorigin="anonymous"></script>
+<!DOCTYPE HTML>
+<!--
+	Identity by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Identity by HTML5 UP</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<section id="main">
+						<header>
+							<span class="avatar"><img src="images/avatar.jpg" alt="" /></span>
+							<h1>Jane Doe</h1>
+							<p>Senior Psychonautics Engineer</p>
+						</header>
+						<!--
+						<hr />
+						<h2>Extra Stuff!</h2>
+						<form method="post" action="#">
+							<div class="fields">
+								<div class="field">
+									<input type="text" name="name" id="name" placeholder="Name" />
+								</div>
+								<div class="field">
+									<input type="email" name="email" id="email" placeholder="Email" />
+								</div>
+								<div class="field">
+									<select name="department" id="department">
+										<option value="">Department</option>
+										<option value="sales">Sales</option>
+										<option value="tech">Tech Support</option>
+										<option value="null">/dev/null</option>
+									</select>
+								</div>
+								<div class="field">
+									<textarea name="message" id="message" placeholder="Message" rows="4"></textarea>
+								</div>
+								<div class="field">
+									<input type="checkbox" id="human" name="human" /><label for="human">I'm a human</label>
+								</div>
+								<div class="field">
+									<label>But are you a robot?</label>
+									<input type="radio" id="robot_yes" name="robot" /><label for="robot_yes">Yes</label>
+									<input type="radio" id="robot_no" name="robot" /><label for="robot_no">No</label>
+								</div>
+							</div>
+							<ul class="actions special">
+								<li><a href="#" class="button">Get Started</a></li>
+							</ul>
+						</form>
+						<hr />
+						-->
+						<footer>
+							<ul class="icons">
+								<li><a href="#" class="icon brands fa-twitter">Twitter</a></li>
+								<li><a href="#" class="icon brands fa-instagram">Instagram</a></li>
+								<li><a href="#" class="icon brands fa-facebook-f">Facebook</a></li>
+							</ul>
+						</footer>
+					</section>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<ul class="copyright">
+							<li>&copy; Jane Doe</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script>
+				if ('addEventListener' in window) {
+					window.addEventListener('load', function() { document.body.className = document.body.className.replace(/\bis-preload\b/, ''); });
+					document.body.className += (navigator.userAgent.match(/(MSIE|rv:11\.0)/) ? ' is-ie' : '');
+				}
+			</script>
+
+	</body>
+</html>
