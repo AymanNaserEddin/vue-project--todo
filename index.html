@@ -1,91 +1,203 @@
-<!DOCTYPE HTML>
-<!--
-	Identity by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Identity by HTML5 UP</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
+<!-- production version, optimized for size and speed -->
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<!-- event keyboard v-on:keyup.enter & modifier-->
 
-		<!-- Wrapper -->
-			<div id="wrapper">
+<!-- <link href="https://unpkg.com/todomvc-app-css@2.1.0/index.css" rel="stylesheet" /> -->
+<div class="container">
+<section class="todoapp card form-group">
+    
+        
+    
+    <header class="header text-center card-body">
+        <h1>MyTodos</h1>
+        <input class="new-todo form-control" autocomplete="off" placeholder="Add New Todo" v-model="newtodo"
+            @keyup.enter="addtodo()">
+    </header>
+    <section class="main form-group">
+            <input  class="toggle-all" id="toggle-all" type="checkbox" v-model="alldone">
+            <label for="toggle-all">Mark all as complete</label>
+        <ul class="todo-list list-group">
+            <li class="todo list-group-item" v-for="todo in filteredTodos" :class="{completed:todo.completed, editing:todo==editingtodo}">
+                <div class="view">
+                    <input class="toggle form-control" type="checkbox" v-model="todo.completed">
+                    <label @dblclick="editTodo(todo)">{{todo.title}}</label>
+                    <button class="destroy  btn-danger" @click="delettodo(todo)">x</button>
+                </div>
+                <input  v-model="todo.title" @keyup.enter="doneEditing" @keyup.esc="cancelEditing" class="edit" type="text">
+            </li>
+        </ul>
+    </section>
+    <footer class="footer form-group card text-center">
+        <span class="todo-count">
+            <strong>{{rammingtodos}}</strong> {{rammingtest}} left
+        </span>
+        <ul class="filters list-group list-group-horizontal-sm text-center">
+            <li class="list-group-item"><a href="#" @click.prevent="visibility='all'" :class="{selected:visibility=='all'}">All</a></li>
+            <li class="list-group-item"><a href="#" @click.prevent="visibility='active'" :class="{selected:visibility=='active'}">Active</a></li>
+            <li class="list-group-item"><a href="#" @click.prevent="visibility='completed'" :class="{selected:visibility=='completed'}">Completed</a></li>
+        </ul>
+        <button @click="removeCompleted" class="clear-completed btn btn-primary">
+            Clear completed
+        </button>
+    </footer>
+</section>
+<footer class="info">
+    <p>Double-click to edit a todo</p>
+</footer>
 
-				<!-- Main -->
-					<section id="main">
-						<header>
-							<span class="avatar"><img src="images/avatar.jpg" alt="" /></span>
-							<h1>Jane Doe</h1>
-							<p>Senior Psychonautics Engineer</p>
-						</header>
-						<!--
-						<hr />
-						<h2>Extra Stuff!</h2>
-						<form method="post" action="#">
-							<div class="fields">
-								<div class="field">
-									<input type="text" name="name" id="name" placeholder="Name" />
-								</div>
-								<div class="field">
-									<input type="email" name="email" id="email" placeholder="Email" />
-								</div>
-								<div class="field">
-									<select name="department" id="department">
-										<option value="">Department</option>
-										<option value="sales">Sales</option>
-										<option value="tech">Tech Support</option>
-										<option value="null">/dev/null</option>
-									</select>
-								</div>
-								<div class="field">
-									<textarea name="message" id="message" placeholder="Message" rows="4"></textarea>
-								</div>
-								<div class="field">
-									<input type="checkbox" id="human" name="human" /><label for="human">I'm a human</label>
-								</div>
-								<div class="field">
-									<label>But are you a robot?</label>
-									<input type="radio" id="robot_yes" name="robot" /><label for="robot_yes">Yes</label>
-									<input type="radio" id="robot_no" name="robot" /><label for="robot_no">No</label>
-								</div>
-							</div>
-							<ul class="actions special">
-								<li><a href="#" class="button">Get Started</a></li>
-							</ul>
-						</form>
-						<hr />
-						-->
-						<footer>
-							<ul class="icons">
-								<li><a href="#" class="icon brands fa-twitter">Twitter</a></li>
-								<li><a href="#" class="icon brands fa-instagram">Instagram</a></li>
-								<li><a href="#" class="icon brands fa-facebook-f">Facebook</a></li>
-							</ul>
-						</footer>
-					</section>
+</div>
 
-				<!-- Footer -->
-					<footer id="footer">
-						<ul class="copyright">
-							<li>&copy; Jane Doe</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-						</ul>
-					</footer>
 
-			</div>
 
-		<!-- Scripts -->
-			<script>
-				if ('addEventListener' in window) {
-					window.addEventListener('load', function() { document.body.className = document.body.className.replace(/\bis-preload\b/, ''); });
-					document.body.className += (navigator.userAgent.match(/(MSIE|rv:11\.0)/) ? ' is-ie' : '');
-				}
-			</script>
 
-	</body>
-</html>
+
+
+
+
+<script>
+
+    /*global Vue, todoStorage */
+
+// Vue.config.devtools = true 
+
+   (function (exports) {
+
+	'use strict';
+
+	var filters = {
+		all: function (todos) {
+			return todos;
+		},
+		active: function (todos) {
+			return todos.filter(function (todo) {
+				return !todo.completed;
+			});
+		},
+		completed: function (todos) {
+			return todos.filter(function (todo) {
+				return todo.completed;
+			});
+		}
+	};
+
+    var todos_storge = {
+        feth:function(){
+            var todos = JSON.parse(localStorage.getItem('todos') || '[]');
+            return todos;
+        },
+        save: function(todos){
+            localStorage.setItem('todos' , JSON.stringify(todos));
+        }
+    }
+
+
+	exports.app = new Vue({
+            'el': '.todoapp',
+            'data': {
+                oldEditingTodoTitle: null,
+                editingtodo: null , 
+                newtodo: '' ,
+                visibility: 'all',
+                todos: todos_storge.feth()
+                
+
+            },
+            computed: {
+			filteredTodos: function () {
+				return filters[this.visibility](this.todos);
+			}, 
+            rammingtodos: function(){
+                return  filters.active(this.todos).length;
+                    },
+                    rammingtest : function(){
+                            if( filters.active(this.todos).length > 1 )
+                                return 'items';
+                             return 'item';   
+
+                    },
+                    alldone :{
+                       get: function(){
+                       return this.rammingtodos === 0;  
+
+                    },
+                       set: function(value){
+                           this.todos.forEach(function(todo){
+                               todo.completed = value; 
+                           });
+                       }
+
+                    } 
+                   
+			
+		},
+
+                methods: {
+                    delettodo: function (todo) {
+                        this.todos.splice(this.todos.indexOf(todo), 1)
+                    },
+                    addtodo: function () {
+
+                        if (this.newtodo == "")
+                            return;
+
+                        this.todos.push({
+
+                            'title': this.newtodo,
+                            'completed': false
+
+                        });
+                        this.newtodo = ""
+
+                    },removeCompleted(){
+                        this.todos = filters.active(this.todos);
+                    },
+                    editTodo(todo){
+                        this.editingtodo = todo;
+                        this.oldEditingTodoTitle = todo.title;
+                    },
+                    doneEditing(){
+                        if(this.editingtodo.title == '')
+                            this.delettodo(this.editingtodo);
+                        this.editingtodo = null;
+                    },
+                    cancelEditing(){
+                        this.editingtodo.title = this.oldEditingTodoTitle;
+                        this.editingtodo = null;
+
+                    },
+
+                   
+
+                }, watch:{
+                    todos : {
+                        handler: function(todos){
+                            todos_storge.save(todos)
+
+                        },
+                        deep : true
+                    }
+                }
+                
+
+            })
+        })(window);
+</script>
+<style>
+
+</style>
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" -->
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script> 
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script> 
